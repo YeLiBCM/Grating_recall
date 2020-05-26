@@ -3,7 +3,6 @@ import scipy.io as sio
 import mat73
 import numpy as np
 from functools import reduce
-from scipy import stats
 
 class SpectralBasic():
     ''' Basic process of ECoG spectral data.
@@ -95,6 +94,7 @@ class SpectralBasic():
         
         
         subject_name = self.sbj_name
+        
         # get good channels in the visual cortex
         elec_vis = reduce(np.intersect1d, (vis_elec[subject_name], elec_good))
         
