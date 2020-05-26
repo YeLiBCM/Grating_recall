@@ -143,9 +143,14 @@ class SpectralBurst(SpectralBasic):
         return NBG_burst_epoch, BBG_burst_epoch
     
     def gamma_burst_explore():
-        
+        '''
+        use different parameters for threshold, e.g. median, 25 % percentile
+        '''
         pass
     
     def gamma_burst_global():
+        '''
+        use global mean for threshold
+        '''
         
         pass
