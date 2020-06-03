@@ -37,7 +37,7 @@ for ii = 1:length(bn)
     freq_BBG = [f_lo_BBG; f_hi_BBG]';
     
     % real task window
-    if  project_name == 'vis_contrast_recall'
+    if  strcmp(project_name,'vis_contrast_recall')
         onset_1st_trial = round(events_info.test_tone_onset(1)/master_vars.compress);
     else
         onset_1st_trial = round(events_info.all_trial_onset(1)/master_vars.compress);
