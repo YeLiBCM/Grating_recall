@@ -9,8 +9,10 @@ close all
 %% subject information
 sbj_name     = input('Subject code: ','s');
 project_name = input('Project name: ', 's');
-bn           = {input('Block number: ','s')}; % block names, can loop for multiple
+bn           = {input('Block number: ','s')};  
 ref_type     = input('CAR or BP ref: ','s');   % common average vs bipolar
+norm_type    = input('Normalization base [blk/ISI]: ','s');  % use testing phase of the whole block 
+                                                             % or the last 1 sec of ISI to normalize the data
 
 for ii = 1:length(bn)
     
@@ -35,25 +37,19 @@ for ii = 1:length(bn)
     f_lo_BBG = 70:10:140;
     f_hi_BBG = 80:10:150;
     freq_BBG = [f_lo_BBG; f_hi_BBG]';
-    
-    % real task window
-    %if  strcmp(project_name,'vis_contrast_recall')
-    %    onset_1st_trial = round(events_info.test_tone_onset(1)/master_vars.compress);
-    %else
-    %    onset_1st_trial = round(events_info.all_trial_onset(1)/master_vars.compress);
-    %end
-    %offset_last_trial = round(events_info.all_trial_offset(end)/master_vars.compress);
-    
-    
-    % epoch window for the last 1 sec of ISI 
-    tf_srate = round(master_vars.ecog_srate/master_vars.compress);
         
-    ISI_epoch_start = floor(2.5*tf_srate);
-    ISI_epoch_end   = ceil(1.5*tf_srate);
-        
-    test_trigger = round(events_info.test_tone_onset/master_vars.compress);
+    % epoch window for normalization            
+    switch norm_type
+       case 'ISI'
+          tf_srate     = round(master_vars.ecog_srate/master_vars.compress);
+          norm_start   = floor(2.5*tf_srate);
+          norm_end     = ceil(1.5*tf_srate);
+          test_trigger = round(events_info.test_tone_onset/master_vars.compress);
+       case 'blk'
+          norm_start = round(events_info.test_tone_onset(1)/master_vars.compress);
+          norm_end   = round(events_info.all_trial_offset(end)/master_vars.compress);
+    end   
     
-        
     for ci = elecs
         band = [];
         
@@ -80,34 +76,35 @@ for ii = 1:length(bn)
         %xlabel('Frequency(Hz)')
         %ylabel('Amplitude')
         
-        % get global mean ISI as normalization base
-        norm_series_NBG = [];
-        norm_series_BBG = [];
-        for i = 1:length(test_trigger)
-        ISI_epoch_NBG = signal_NBG(1,test_trigger-ISI_epoch_start:test_trigger-ISI_epoch_end);
-        ISI_epoch_BBG = signal_BBG(:,test_trigger-ISI_epoch_start:test_trigger-ISI_epoch_end);
+        % get normalization base
+        switch norm_type
+           case 'ISI'
+              norm_series_NBG = [];
+              norm_series_BBG = [];
+              
+              for i = 1:length(test_trigger)
+              ISI_epoch_NBG = signal_NBG(1,test_trigger-norm_start:test_trigger-norm_end);
+              ISI_epoch_BBG = signal_BBG(:,test_trigger-norm_start:test_trigger-norm_end);
         
-        norm_series_NBG = [norm_series_NBG ISI_epoch_NBG];
-        norm_series_BBG = [norm_series_BBG ISI_epoch_BBG];
+              norm_series_NBG = [norm_series_NBG ISI_epoch_NBG];
+              norm_series_BBG = [norm_series_BBG ISI_epoch_BBG];
+              end
+              
+              norm_base_NBG = mean(norm_series_NBG);
+              norm_base_BBG = mean(norm_series_BBG,2);
+              
+           case 'blk'
+              norm_base_NBG = mean(signal_NBG(norm_start:norm_end));
+              norm_base_BBG = mean(signal_BBG(:,norm_start:norm_end),2);
         end
-               
+        
         %% NBG power extraction
-        % normalize the entire power series as % of global mean
-        %norm_base_NBG = mean(signal_NBG(onset_1st_trial:offset_last_trial));
-        %NBG_power     = 100*(signal_NBG/norm_base_NBG) - 100; % make it percentage change
-        % update (June 3 2020): use global mean ISI to normalize
-        norm_base_NBG = mean(norm_series_NBG);
-        NBG_power     = 100*(signal_NBG/norm_base_NBG)-100;
+        signal_NBG_normed = signal_NBG/norm_base_NBG;
+        NBG_power         = 100*signal_NBG_normed - 100;
         
         %% BBG power extraction
-        % normalize each band using global mean
-        %norm_base_BBG = mean(signal_BBG(:,onset_1st_trial:offset_last_trial),2);
-        %signal_BBG_normed = bsxfun(@rdivide, signal_BBG, norm_base_NBG);
-        %BBG_power     = mean(100*signal_BBG_normed - 100,1);
-        % update (June 3 2020): use global mean ISI to normalize
-        norm_base_BBG     = mean(norm_series_BBG,2) ;
-        signal_BBG_normed = bsxfun(@rdivide, signal_BBG, norm_base_NBG);
-        BBG_power         = mean(100*signal_BBG_normed - 100,1);
+        signal_BBG_normed = bsxfun(@rdivide, signal_BBG, norm_base_BBG);
+        BBG_power         = mean(signal_BBG_normed.*100 - 100, 1);
         
         % store results
         band.elec = ci;
@@ -116,7 +113,12 @@ for ii = 1:length(bn)
         band.BBG_power = BBG_power;
         
         % save results
-        save(sprintf('%s/TBand_decomp_%s_%s_%s_%.d',master_vars.Spec_dir, ref_type, master_vars.sbj_name, block_name, ci),'band');
+        switch norm_type
+           case 'ISI'
+              save(sprintf('%s/TBand_decomp_%s_%s_%s_%.d',master_vars.Spec_dir, ref_type, master_vars.sbj_name, block_name, ci),'band');
+           case 'blk'
+              save(sprintf('%s/TBand_decomp_BLK_%s_%s_%s_%.d',master_vars.Spec_dir, ref_type, master_vars.sbj_name, block_name, ci),'band');
+        end
         
         disp(['Channel ' num2str(ci) ' has been processed!'])
         
