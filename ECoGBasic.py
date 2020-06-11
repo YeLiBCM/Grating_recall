@@ -34,7 +34,9 @@ class SpectralBasic():
         2) extract good channels or good channels within visual cortex
         
         Args:
-        elec_type : good electrodes type, 'vis' = good electrodes within visual cortex
+        elec_type : good electrodes type, 
+                   'vis' = good electrodes within visual cortex,
+                   'all' = good electrodes in the whole brain
         
         Returns:
         elec_list : a list of good electrodes with the tpye requested
