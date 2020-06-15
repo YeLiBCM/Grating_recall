@@ -37,7 +37,7 @@ class SpectralBasic():
         elec_type : good electrodes type, 
                    'vis' = good electrodes within visual cortex,
                    'all' = good electrodes in the whole brain
-        
+                   'resp' = visual responsive electrodes
         Returns:
         elec_list : a list of good electrodes with the tpye requested
         '''
@@ -49,6 +49,14 @@ class SpectralBasic():
                     'YBJ': np.arange(59,91),
                     'YBN': np.arange(97,129),
                     'YCP': np.arange(65,87)}
+        
+        vis_resp_elec = {'YBE': np.array([]),
+                    'YBG': np.array([36, 37, 43, 45, 46, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57]),
+                    'YBI': np.array([105, 113, 114, 115, 116, 117]),
+                    'YBJ': np.array([63, 64, 72]),
+                    'YBN': np.concatenate((np.arange(97,101),np.asarray([101]),np.arange(105,128)),axis=0),
+                    'YCP': np.array([65, 66, 67, 69, 70, 71, 72, 77, 78, 79, 80, 81])}
+        
         
         # extract bad electrodes list
         elec_del    = []
@@ -99,11 +107,14 @@ class SpectralBasic():
         
         # get good channels in the visual cortex
         elec_vis = reduce(np.intersect1d, (vis_elec[subject_name], elec_good))
+        elec_vis_resp = reduce(np.intersect1d, (vis_resp_elec[subject_name], elec_good))
         
         if elec_type == 'vis':
             elec_list = elec_vis
         elif elec_type == 'all':
             elec_list = elec_good
+        elif elec_type == 'resp':
+            elec_list = elec_vis_resp
         else:
             print('Wrong electrode type!')
             
