@@ -50,7 +50,7 @@ class SpectralBasic():
                     'YBN': np.arange(97,129),
                     'YCP': np.arange(65,87)}
         
-        vis_resp_elec = {'YBE': np.array([]),
+        vis_resp_elec = {'YBE': np.array([38, 54, 55, 56]),
                     'YBG': np.array([36, 37, 43, 45, 46, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57]),
                     'YBI': np.array([105, 113, 114, 115, 116, 117]),
                     'YBJ': np.array([63, 64, 72]),
@@ -129,6 +129,7 @@ class SpectralBasic():
         extract_type: the spectral_data you want to extract
                       = 'freq': decomposed by frequency-wise, 2Hz resolution
                       = 'band': decomposed by band-pass, Hilbert transform
+                    
         Returns:
         spectral_mx: spectral data of all block of a given task (trial number x frequencies x time points)
         blk_trial: a list of trial numbers of blocks of a given task
@@ -179,7 +180,7 @@ class SpectralBasic():
                 freq_vect = np.array([[20, 60], [70, 150]])
                 
                 # extract band amplitude
-                Band_path = Spec_dir + '/TBand_decomp_CAR_{}_{}_{}.mat'.format(self.sbj_name,block_name,str(ci))
+                Band_path = Spec_dir + '/TBand_decomp_BLK_CAR_{}_{}_{}.mat'.format(self.sbj_name,block_name,str(ci))
                 Band_data = sio.loadmat(Band_path)['band']
                 NBG_power = Band_data['NBG_power'][0][0]
                 BBG_power = Band_data['BBG_power'][0][0]
