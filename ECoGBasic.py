@@ -43,14 +43,17 @@ class SpectralBasic():
         '''
         
         # visual electrodes dictionary
-        vis_elec = {'YBE': np.concatenate((np.arange(35,61),np.asarray([62]),np.arange(64,68),np.arange(70,83)),axis=0),
-                    'YBG': np.concatenate((np.arange(36,40),np.arange(41,47),np.arange(48,59),np.arange(91,99),np.asarray([107]),np.arange(109,115)),axis=0),
-                    'YBI': np.arange(105,129),
-                    'YBJ': np.arange(59,91),
-                    'YBN': np.arange(97,129),
-                    'YCP': np.arange(65,87)}
+        #vis_elec = {'YBE': np.concatenate((np.arange(35,61),np.asarray([62]),np.arange(64,68),np.arange(70,83)),axis=0),
+        vis_elec = {
+            'YBE': np.concatenate((np.arange(35,55),np.array([56]),np.arange(58,61),np.array([62]),np.arange(64,68),np.arange(70,79),np.array([80,82])),axis=0),
+            'YBG': np.concatenate((np.arange(36,40),np.arange(41,47),np.arange(48,59),np.arange(91,99),np.asarray([107]),np.arange(109,115)),axis=0),
+            'YBI': np.arange(105,129),
+            'YBJ': np.arange(59,91),
+            'YBN': np.arange(97,129),
+            'YCP': np.arange(65,87)}
         
-        vis_resp_elec = {'YBE': np.array([38, 54, 55, 56]),
+        #vis_resp_elec = {'YBE': np.array([38, 54, 55, 56]),
+        vis_resp_elec = {'YBE' : np.array([38, 54, 56]),
                     'YBG': np.array([36, 37, 43, 45, 46, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57]),
                     'YBI': np.array([105, 113, 114, 115, 116, 117]),
                     'YBJ': np.array([63, 64, 72]),
