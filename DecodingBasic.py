@@ -294,6 +294,6 @@ class DataBasic():
         band_start = np.where(freq_vect == band[0])[0][0]
         band_end   = np.where(freq_vect == band[1])[0][0]
         
-        band_val = np.mean(spect_mx[:,band_start:band_end,:],axis=1)
+        band_val = np.mean(spect_mx[:,band_start:band_end+1,:],axis=1)
         
         return band_val
