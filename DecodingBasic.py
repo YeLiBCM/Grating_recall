@@ -60,12 +60,15 @@ class DataBasic():
         '''
         vis_elec = {
             'YBN' : np.array([97, 98, 99, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113,\
-                              114, 115, 116, 117, 118, 119, 120, 121, 122, 124, 125, 126, 127])
+                              114, 115, 116, 117, 118, 119, 120, 121, 122, 124, 125, 126, 127]),
+            'YBI' : np.array([105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119,\
+                             120, 121, 122, 123, 124, 126, 127, 128])
             }
         
         resp_elec = {
             'YBN': np.array([97, 98, 99, 101, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116,\
-                             117, 118, 119, 120, 121, 122, 124, 125, 126, 127])
+                             117, 118, 119, 120, 121, 122, 124, 125, 126, 127]),
+            'YBI': np.array([105, 113, 114, 115, 116, 117])
             }
         if elec_type == 'vis':
             elec_list = vis_elec[self.sbj_name]
@@ -172,8 +175,7 @@ class DataBasic():
                 else:
                     spectral_mx = np.append(spectral_mx, tmp_normed, axis = 0)
                     
-                trial_index += 1
-              
+                trial_index += 1     
         if contrast_info[0] < 10:
             contrast_info = (100*contrast_info).astype(int)  
             
@@ -297,3 +299,104 @@ class DataBasic():
         band_val = np.mean(spect_mx[:,band_start:band_end+1,:],axis=1)
         
         return band_val
+    
+    def get_NBG_spect(self,spect_mx,ci,point_num = 5):
+        '''
+        get values within NBG
+        point_num == 5: get 5 points (20Hz, 30Hz, 40Hz, 50Hz, 60Hz)
+        point_num == 11: get 11 points (20, 24, 28, 32, 36, 40, 44, 48, 52, 56, 60 Hz) 
+        '''
+        
+        if spect_mx.shape[1] == 200:
+            freq_vect = np.arange(2,202,1)
+        elif spect_mx.shape[1] == 101:
+            freq_vect = np.arange(2,203,2)
+        else:
+            print('Wrong frequency resolution!')
+        
+        if point_num == 5:
+            NBG_1 = np.where(freq_vect == 20)[0][0]
+            NBG_2 = np.where(freq_vect == 30)[0][0]
+            NBG_3 = np.where(freq_vect == 40)[0][0]
+            NBG_4 = np.where(freq_vect == 50)[0][0]
+            NBG_5 = np.where(freq_vect == 60)[0][0]
+        
+            NBG_ind = np.array([NBG_1,NBG_2,NBG_3,NBG_4,NBG_5])
+        elif point_num == 11:
+            NBG_1 = np.where(freq_vect == 20)[0][0]
+            NBG_2 = np.where(freq_vect == 24)[0][0]
+            NBG_3 = np.where(freq_vect == 28)[0][0]
+            NBG_4 = np.where(freq_vect == 32)[0][0]
+            NBG_5 = np.where(freq_vect == 36)[0][0]
+            NBG_6 = np.where(freq_vect == 40)[0][0]
+            NBG_7 = np.where(freq_vect == 44)[0][0]
+            NBG_8 = np.where(freq_vect == 48)[0][0]
+            NBG_9 = np.where(freq_vect == 52)[0][0]
+            NBG_10 = np.where(freq_vect == 56)[0][0]
+            NBG_11 = np.where(freq_vect == 60)[0][0]
+            
+            NBG_ind = np.array([NBG_1,NBG_2,NBG_3,NBG_4,NBG_5,NBG_6,NBG_7,NBG_8,NBG_9,NBG_10,NBG_11])
+        else:
+            print('Wrong type!')
+            
+        spect_NBG = spect_mx[:,NBG_ind,:]
+        
+        return spect_NBG
+    
+    def get_BBG_spect(self,spect_mx,ci,point_num = 9):
+        '''
+        get values within NBG
+        point_num == 9: get 9 points (70Hz, 80Hz, 90Hz, 100Hz, 110Hz, 120Hz, 130Hz, 140Hz, 150Hz)
+        point_num == 21: get 21 points (4Hz interval) 
+        '''
+        
+        if spect_mx.shape[1] == 200:
+            freq_vect = np.arange(2,202,1)
+        elif spect_mx.shape[1] == 101:
+            freq_vect = np.arange(2,203,2)
+        else:
+            print('Wrong frequency resolution!')
+        
+        if point_num == 9:
+            BBG_1 = np.where(freq_vect == 70)[0][0]
+            BBG_2 = np.where(freq_vect == 80)[0][0]
+            BBG_3 = np.where(freq_vect == 90)[0][0]
+            BBG_4 = np.where(freq_vect == 100)[0][0]
+            BBG_5 = np.where(freq_vect == 110)[0][0]
+            BBG_6 = np.where(freq_vect == 120)[0][0]
+            BBG_7 = np.where(freq_vect == 130)[0][0]
+            BBG_8 = np.where(freq_vect == 140)[0][0]
+            BBG_9 = np.where(freq_vect == 150)[0][0]
+        
+            BBG_ind = np.array([BBG_1,BBG_2,BBG_3,BBG_4,BBG_5,BBG_6,BBG_7,BBG_8,BBG_9])
+        elif point_num == 21:
+            BBG_1  = np.where(freq_vect == 70)[0][0]
+            BBG_2  = np.where(freq_vect == 74)[0][0]
+            BBG_3  = np.where(freq_vect == 78)[0][0]
+            BBG_4  = np.where(freq_vect == 82)[0][0]
+            BBG_5  = np.where(freq_vect == 86)[0][0]
+            BBG_6  = np.where(freq_vect == 90)[0][0]
+            BBG_7  = np.where(freq_vect == 94)[0][0]
+            BBG_8  = np.where(freq_vect == 98)[0][0]
+            BBG_9  = np.where(freq_vect == 102)[0][0]
+            BBG_10 = np.where(freq_vect == 106)[0][0]
+            BBG_11 = np.where(freq_vect == 110)[0][0]
+            BBG_12 = np.where(freq_vect == 114)[0][0]
+            BBG_13 = np.where(freq_vect == 118)[0][0]
+            BBG_14 = np.where(freq_vect == 122)[0][0]
+            BBG_15 = np.where(freq_vect == 126)[0][0]
+            BBG_16 = np.where(freq_vect == 130)[0][0]
+            BBG_17 = np.where(freq_vect == 134)[0][0]
+            BBG_18 = np.where(freq_vect == 138)[0][0]
+            BBG_19 = np.where(freq_vect == 142)[0][0]
+            BBG_20 = np.where(freq_vect == 146)[0][0]
+            BBG_21 = np.where(freq_vect == 150)[0][0]
+            
+            BBG_ind = np.array([BBG_1,BBG_2,BBG_3,BBG_4,BBG_5,BBG_6,BBG_7,BBG_8,BBG_9,BBG_10,\
+                                BBG_11,BBG_12,BBG_13,BBG_14,BBG_15,BBG_16,BBG_17,BBG_18,BBG_19,BBG_20,BBG_21])
+        else:
+            print('Wrong type!')
+            
+        spect_BBG = spect_mx[:,BBG_ind,:]
+        
+        return spect_BBG
